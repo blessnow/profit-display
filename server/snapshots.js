@@ -1,7 +1,7 @@
 import { aggregateAccount } from "./portfolio.js";
 import {
   isCnAshareWeekdayShanghai,
-  isPastCnAshareRegularClose,
+  isPastCnAshareSnapshotFreezeTime,
 } from "./market-hours.js";
 import { isCnAshareTradingDayYmd } from "./exchange-calendar.js";
 import { historyCalendarDaysDefault } from "./history-window.js";
@@ -53,7 +53,7 @@ export function pruneSnapshotDailyOlderThanDays(db, retainDays = SNAPSHOT_RETAIN
 
 /**
  * 按上海「今天」写入/更新每个账户一行：总资产、持仓市值、持仓盈亏、已实现（占位 0）。
- * - 交易日下午收盘（≥15:00 上海）后：若当日已有记录则不再改写（与行情定时一致定格）；若无记录则补一条（例如服务此前未运行）。
+ * - 工作日且已过「盘后」快照冻结时刻（15:00 + max(延长拉价分钟, SNAPSHOT_FREEZE_DELAY…)）后：若当日已有记录则不再改写总资产/市值；若无记录则补一条。盈亏列仍会修补。
  * - 每次调用会删除早于 retainDays 的快照（默认保留 365 天）。
  */
 export function upsertDailySnapshots(db) {
@@ -61,7 +61,7 @@ export function upsertDailySnapshots(db) {
   const day = shanghaiTodayStr();
   if (!isCnAshareTradingDayYmd(day)) return;
   const weekdayClosedFrozen =
-    isCnAshareWeekdayShanghai() && isPastCnAshareRegularClose();
+    isCnAshareWeekdayShanghai() && isPastCnAshareSnapshotFreezeTime();
 
   const accounts = db.prepare("SELECT id FROM accounts ORDER BY id").all();
   const existsStmt = db.prepare(
