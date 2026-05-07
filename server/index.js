@@ -77,6 +77,16 @@ ensureSeeded();
           "/",
           (r.codes_ok ?? 0) + (r.codes_failed ?? 0)
         );
+        if (r.codes_failed > 0 && r.fetch_errors?.length) {
+          const sample = r.fetch_errors
+            .slice(0, 5)
+            .map((e) => `${e.code}: ${e.message}`)
+            .join(" | ");
+          console.warn(
+            "[snapshot] 日K 请求失败（历史曲线会退回用现价，多日数值相同）·示例:",
+            sample
+          );
+        }
       }
     }
   } catch (e) {
@@ -112,6 +122,61 @@ app.get("/api/accounts/:id", (req, res) => {
   const acc = aggregateAccount(db, id);
   if (!acc) return res.status(404).json({ error: "账户不存在" });
   res.json(acc);
+});
+
+/** 新建空账户（无持仓）；可用/可取现金可初值，之后用成交、入出金调整 */
+app.post("/api/accounts", (req, res) => {
+  const {
+    broker,
+    account_name,
+    account_type,
+    available_cash,
+    withdrawable_cash,
+  } = req.body || {};
+  const name = String(account_name || "").trim();
+  if (!name) {
+    return res.status(400).json({ error: "请填写账户名称" });
+  }
+  const brokerStr = broker != null ? String(broker).trim() : "";
+  const typeRaw = account_type != null ? String(account_type).trim() : "";
+  const typeStr = typeRaw ? typeRaw : null;
+  const cash =
+    available_cash != null && available_cash !== ""
+      ? Number(available_cash)
+      : 0;
+  if (!Number.isFinite(cash) || cash < 0) {
+    return res.status(400).json({ error: "可用资金须为非负数" });
+  }
+  let wdc = null;
+  if (
+    withdrawable_cash != null &&
+    withdrawable_cash !== "" &&
+    String(withdrawable_cash).trim() !== ""
+  ) {
+    wdc = Number(withdrawable_cash);
+    if (!Number.isFinite(wdc) || wdc < 0) {
+      return res.status(400).json({ error: "可取资金须为非负数" });
+    }
+  }
+  try {
+    const info = db
+      .prepare(
+        `INSERT INTO accounts (broker, account_name, account_type, position_ratio, available_cash, withdrawable_cash, daily_profit, daily_profit_pct, realized_pnl_total)
+         VALUES (?, ?, ?, NULL, ?, ?, 0, NULL, 0)`
+      )
+      .run(brokerStr, name, typeStr, cash, wdc);
+    const id = Number(info.lastInsertRowid);
+    try {
+      upsertDailySnapshots(db);
+    } catch (_) {}
+    res.status(201).json(aggregateAccount(db, id));
+  } catch (e) {
+    const msg = String(e && e.message ? e.message : e);
+    if (msg.includes("UNIQUE") || e?.code === "SQLITE_CONSTRAINT_UNIQUE") {
+      return res.status(409).json({ error: "账户名称已存在，请换一个" });
+    }
+    throw e;
+  }
 });
 
 /** 日线快照曲线：总资产 + 持仓市值（上海日历日） */
@@ -378,6 +443,22 @@ app.post("/api/admin/refresh-history-kline", async (req, res) => {
       ? Math.min(60, Math.max(3, Math.floor(n)))
       : historyCalendarDaysDefault();
     const r = await backfillSnapshotsFromHistoricalKlines(db, calendarDays);
+    if (r.fetch_errors?.length) {
+      const sample = r.fetch_errors
+        .slice(0, 5)
+        .map((e) => `${e.code}: ${e.message}`)
+        .join(" | ");
+      console.warn(
+        "[snapshot] 日K 刷新:",
+        r.codes_ok ?? 0,
+        "成功 /",
+        r.codes_failed ?? 0,
+        "失败。",
+        r.codes_failed > 0
+          ? "失败时历史日一律用现价 → 曲线可能成水平线。示例: " + sample
+          : ""
+      );
+    }
     try {
       upsertDailySnapshots(db);
     } catch (_) {}

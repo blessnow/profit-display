@@ -14,6 +14,9 @@
           <p class="muted">买卖按成交价调整现金；买入合并同股为加权成本</p>
         </div>
         <div class="top-actions">
+          <button type="button" class="small" id="btn-new-account">
+            新增账户
+          </button>
           <button type="button" class="small" id="btn-refresh-kline" title="当前持仓×日K收盘+当前现金，刷新早于今日的近两周曲线（与 SNAPSHOT_HISTORY_CALENDAR_DAYS 一致）">
             日K刷新曲线
           </button>
@@ -92,6 +95,27 @@
         <menu class="actions">
           <button type="submit" class="primary">保存</button>
           <button type="button" id="edit-cancel">取消</button>
+        </menu>
+      </form>
+    </dialog>
+
+    <dialog id="dlg-new-account" class="panel">
+      <form method="dialog" id="form-new-account">
+        <h2>新增账户</h2>
+        <p class="muted">创建无持仓账户；初始现金可填，持仓请用「成交」买入或后续编辑。</p>
+        <label>账户名称 <span class="muted">（必填，不可重复）</span></label>
+        <input type="text" id="new-acc-name" required maxlength="64" placeholder="如 账户1、银河主账户" autocomplete="off" />
+        <label>券商</label>
+        <input type="text" id="new-acc-broker" maxlength="64" placeholder="可空" autocomplete="organization" />
+        <label>账户类型</label>
+        <input type="text" id="new-acc-type" maxlength="64" placeholder="如 A股、人民币账户 CNY A股" />
+        <label>初始可用资金（元）</label>
+        <input type="number" id="new-acc-cash" min="0" step="0.01" value="0" />
+        <label>初始可取资金（元）</label>
+        <input type="number" id="new-acc-withdraw" min="0" step="0.01" placeholder="留空表示未区分/不记录" />
+        <menu class="actions">
+          <button type="submit" class="primary">创建</button>
+          <button type="button" id="new-acc-cancel">取消</button>
         </menu>
       </form>
     </dialog>

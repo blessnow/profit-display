@@ -1,8 +1,4 @@
-import {
-  normalizeStockCode,
-  guessSecidFromCode,
-  fetchDailyKlineCloses,
-} from "./market-quote.js";
+import { normalizeStockCode, fetchDailyKlineCloses } from "./market-quote.js";
 import { shanghaiTodayStr } from "./snapshots.js";
 import { isCnAshareTradingDayYmd } from "./exchange-calendar.js";
 import { aggregateAccountForSnapshotDay } from "./portfolio.js";
@@ -112,8 +108,7 @@ export async function backfillSnapshotsFromHistoricalKlines(
     await Promise.all(
       chunk.map(async (code) => {
         try {
-          const secid = guessSecidFromCode(code);
-          const trading = await fetchDailyKlineCloses(secid, beg, end);
+          const trading = await fetchDailyKlineCloses(code, beg, end);
           const filled = forwardFillClosesOnCalendar(historicalDays, trading);
           closeByCodeDay.set(code, filled);
         } catch (e) {
@@ -161,7 +156,7 @@ export async function backfillSnapshotsFromHistoricalKlines(
           agg.summary.total_assets,
           agg.summary.market_value,
           agg.summary.total_profit,
-          0
+          agg.summary.realized_pnl_total ?? 0
         );
         cells++;
       }

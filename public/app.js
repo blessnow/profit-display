@@ -579,6 +579,9 @@ function renderOneAccount(a, charts) {
   }</div>
         </div>
         <div class="toolbar">
+          <button type="button" class="small btn-buy-first" data-account="${
+            a.id
+          }">买入</button>
           <button type="button" class="small btn-cash" data-id="${
             a.id
           }">银证入出金</button>
@@ -691,6 +694,11 @@ function bind(container) {
       })
     );
   });
+  container.querySelectorAll(".btn-buy-first").forEach((btn) => {
+    btn.addEventListener("click", () =>
+      openTrade(Number(btn.dataset.account), { side: "buy" })
+    );
+  });
   container.querySelectorAll(".btn-cash").forEach((btn) => {
     btn.addEventListener("click", () => openCash(Number(btn.dataset.id)));
   });
@@ -699,7 +707,50 @@ function bind(container) {
 
 const dlgTrade = document.getElementById("dlg-trade");
 const dlgEdit = document.getElementById("dlg-edit");
+const dlgNewAccount = document.getElementById("dlg-new-account");
 const dlgCash = document.getElementById("dlg-cash");
+
+function openNewAccount() {
+  document.getElementById("new-acc-name").value = "";
+  document.getElementById("new-acc-broker").value = "";
+  document.getElementById("new-acc-type").value = "";
+  document.getElementById("new-acc-cash").value = "0";
+  document.getElementById("new-acc-withdraw").value = "";
+  dlgNewAccount.showModal();
+}
+
+document.getElementById("btn-new-account").onclick = () => openNewAccount();
+document.getElementById("new-acc-cancel").onclick = () => dlgNewAccount.close();
+document.getElementById("form-new-account").onsubmit = async (e) => {
+  e.preventDefault();
+  try {
+    const name = document.getElementById("new-acc-name").value.trim();
+    const body = {
+      account_name: name,
+      broker: document.getElementById("new-acc-broker").value.trim(),
+      account_type:
+        document.getElementById("new-acc-type").value.trim() || undefined,
+      available_cash: Number(document.getElementById("new-acc-cash").value),
+    };
+    const w = document.getElementById("new-acc-withdraw").value.trim();
+    if (w !== "") body.withdrawable_cash = Number(w);
+    const r = await apiFetch(`${API}/api/accounts`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    });
+    const j = await r.json().catch(() => ({}));
+    if (!r.ok) {
+      alert(j.error || r.statusText);
+      return;
+    }
+    dlgNewAccount.close();
+    refresh();
+  } catch (err) {
+    if (err.message === "UNAUTHORIZED" || err.status === 401) return;
+    alert(err.message || String(err));
+  }
+};
 
 function openTrade(accountId, preset = {}) {
   document.getElementById("trade-account-id").value = accountId;
@@ -883,14 +934,25 @@ document.getElementById("btn-refresh-kline").onclick = async () => {
       alert("未执行：" + (j.reason || "") + "（请配置 QUOTE_KLINE_URL）");
       return;
     }
+    const failHint =
+      j.codes_failed > 0
+        ? "\n\n注意：" +
+          j.codes_failed +
+          " 个代码日K未拉到数据，历史日会用同一现价估算，曲线可能每天数值相同。看终端日志或下方原因。"
+        : "";
     const warn =
       j.fetch_errors && j.fetch_errors.length
-        ? "\n部分代码失败：" + j.fetch_errors.map((x) => x.code).join(", ")
+        ? "\n失败示例：\n" +
+          j.fetch_errors
+            .slice(0, 4)
+            .map((x) => x.code + ": " + (x.message || ""))
+            .join("\n")
         : "";
     alert(
       "已按真实日K写入 " +
         (j.historical_days?.length ?? "?") +
         " 个历史自然日；当日仍用现价快照。" +
+        failHint +
         warn
     );
     refresh();

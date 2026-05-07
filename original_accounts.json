@@ -461,6 +461,34 @@
                     "stock_code": "002136"
                 }
             ]
+        },
+        {
+            "broker": "",
+            "account_name": "账户1",
+            "account_type": "A股",
+            "position_ratio": 64.2,
+            "summary": {
+                "total_assets": 168320.09,
+                "total_profit": 169.61,
+                "daily_profit": 169.61,
+                "daily_profit_pct": 0.1,
+                "market_value": 108000,
+                "available_cash": 60320.09,
+                "withdrawable_cash": 60320.09
+            },
+            "holdings": [
+                {
+                    "stock_name": "盾安环境",
+                    "market_value": 108000,
+                    "profit": 169.61,
+                    "profit_pct": 0.157,
+                    "position": 9000,
+                    "available": 0,
+                    "cost_price": 11.981,
+                    "current_price": 12,
+                    "stock_code": "002011"
+                }
+            ]
         }
     ]
 }
