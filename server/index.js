@@ -39,6 +39,32 @@ const publicDir = path.join(root, "public");
   }
 })();
 
+/** 启动/排查：不写完整 URL，只写是否配置与模板占位符（Railway Variables 是否生效） */
+function logQuoteEnvDiagnostics() {
+  const k = (process.env.QUOTE_KLINE_URL || "").trim();
+  const p = (process.env.QUOTE_PRICE_URL || "").trim();
+  const sy = (process.env.QUOTE_SYNC_URL || "").trim();
+  console.log(
+    "[env] QUOTE_KLINE_URL:",
+    k
+      ? `set len=${k.length} tmpl={{symbol}}:${k.includes(
+          "{{symbol}}"
+        )} {{period1}}:${k.includes("{{period1}}")} {{secid}}:${k.includes(
+          "{{secid}}"
+        )}`
+      : "EMPTY → POST 日K刷新会 skipped"
+  );
+  console.log(
+    "[env] QUOTE_PRICE_URL:",
+    p
+      ? `set len=${p.length} {{symbol}}:${p.includes(
+          "{{symbol}}"
+        )} {{secid}}:${p.includes("{{secid}}")}`
+      : "EMPTY"
+  );
+  console.log("[env] QUOTE_SYNC_URL:", sy ? `set len=${sy.length}` : "empty");
+}
+
 const app = express();
 app.use(cors());
 app.use(express.json({ limit: "2mb" }));
@@ -443,6 +469,13 @@ app.post("/api/admin/refresh-history-kline", async (req, res) => {
       ? Math.min(60, Math.max(3, Math.floor(n)))
       : historyCalendarDaysDefault();
     const r = await backfillSnapshotsFromHistoricalKlines(db, calendarDays);
+    if (r.skipped && r.reason === "QUOTE_KLINE_URL empty") {
+      console.warn(
+        "[snapshot] refresh-history-kline skipped: QUOTE_KLINE_URL empty | trim.length=",
+        (process.env.QUOTE_KLINE_URL || "").trim().length,
+        "（检查 Railway 是否把变量挂到本 Web Service 并已 Redeploy）"
+      );
+    }
     if (r.fetch_errors?.length) {
       const sample = r.fetch_errors
         .slice(0, 5)
@@ -472,6 +505,7 @@ app.use(express.static(publicDir));
 
 const port = Number(process.env.PORT) || 3780;
 app.listen(port, () => {
+  logQuoteEnvDiagnostics();
   const { user, pass } = getAdminCredentials();
   console.log(`http://localhost:${port}`);
   console.log(`登录：HTTP Basic 用户「${user}」`);
