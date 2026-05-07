@@ -504,10 +504,11 @@ app.post("/api/admin/refresh-history-kline", async (req, res) => {
 app.use(express.static(publicDir));
 
 const port = Number(process.env.PORT) || 3780;
-app.listen(port, () => {
+const listenHost = process.env.LISTEN_HOST || "0.0.0.0";
+app.listen(port, listenHost, () => {
   logQuoteEnvDiagnostics();
   const { user, pass } = getAdminCredentials();
-  console.log(`http://localhost:${port}`);
+  console.log(`http://${listenHost}:${port}`);
   console.log(`登录：HTTP Basic 用户「${user}」`);
   if (!process.env.ADMIN_PASS) {
     console.log("未设置 ADMIN_PASS，当前使用默认密码：" + pass);
