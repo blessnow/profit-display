@@ -3,9 +3,17 @@ const AUTH_KEY = "posd_basic";
 /** 与后端 SNAPSHOT_HISTORY_CALENDAR_DAYS 默认一致（约两周） */
 const CHART_HISTORY_CALENDAR_DAYS = 14;
 
+/** 本次登录是否为用户点击「进入」触发（用于失败时提示，避免无声 401） */
+let loginAttemptPending = false;
+
 function getAuthHeader() {
-  const v = sessionStorage.getItem(AUTH_KEY);
-  return v ? { Authorization: v } : {};
+  let v = sessionStorage.getItem(AUTH_KEY);
+  if (!v) return {};
+  if (/^Basic\s+/i.test(v)) {
+    v = "Positions " + v.replace(/^Basic\s+/i, "").trim();
+    sessionStorage.setItem(AUTH_KEY, v);
+  }
+  return { Authorization: v };
 }
 
 async function apiFetch(url, opts = {}) {
@@ -879,6 +887,7 @@ async function refresh() {
     } catch (_) {
       charts = null;
     }
+    loginAttemptPending = false;
     hideLogin();
     loading.classList.add("hidden");
     renderAccounts(data, charts);
@@ -888,8 +897,15 @@ async function refresh() {
       loading.classList.remove("hidden");
       accountsEl.classList.add("hidden");
       loading.textContent = "请先登录";
+      if (loginAttemptPending) {
+        loginAttemptPending = false;
+        alert(
+          "登录失败：账号或密码不对；若确认无误，多半是浏览器仍在使用旧版页面脚本。\n\n请对本页「强制刷新」：Windows/Linux 用 Ctrl+Shift+R，Mac 用 ⌘+Shift+R；或在 Chrome 中对该站点清除缓存后再试。"
+        );
+      }
       return;
     }
+    loginAttemptPending = false;
     loading.classList.remove("hidden");
     loading.textContent = "加载失败：" + (err.message || String(err));
   }
@@ -899,11 +915,12 @@ document.getElementById("form-login").onsubmit = (e) => {
   e.preventDefault();
   const u = document.getElementById("login-user").value.trim();
   const p = document.getElementById("login-pass").value;
+  loginAttemptPending = true;
   sessionStorage.setItem(
     AUTH_KEY,
     "Positions " + btoa(unescape(encodeURIComponent(u + ":" + p)))
   );
-  refresh();
+  void refresh();
 };
 
 document.getElementById("btn-logout").onclick = () => {
@@ -974,9 +991,13 @@ document.getElementById("btn-sync-quotes").onclick = async () => {
       return;
     }
     if (j.skipped) {
+      const noSource =
+        j.reason === "QUOTE_PRICE_URL and QUOTE_SYNC_URL empty" ||
+        (typeof j.reason === "string" &&
+          j.reason.includes("no quote source"));
       alert(
-        j.reason === "QUOTE_PRICE_URL and QUOTE_SYNC_URL empty"
-          ? "未配置行情：请设置 QUOTE_PRICE_URL（按代码）或 QUOTE_SYNC_URL（按名称 JSON）"
+        noSource
+          ? "未配置行情：请设置 TUSHARE_TOKEN（TuShare rt_k），或 QUOTE_PRICE_URL / QUOTE_SYNC_URL"
           : "已跳过：" + (j.reason || "")
       );
     } else {

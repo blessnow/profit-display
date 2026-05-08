@@ -63,6 +63,14 @@ function logQuoteEnvDiagnostics() {
       : "EMPTY"
   );
   console.log("[env] QUOTE_SYNC_URL:", sy ? `set len=${sy.length}` : "empty");
+  const tsTok = (process.env.TUSHARE_TOKEN || "").trim();
+  const tsUrl = (process.env.TUSHARE_HTTP_URL || "").trim();
+  console.log(
+    "[env] TUSHARE:",
+    tsTok
+      ? `token set len=${tsTok.length} http_url=${tsUrl ? `set len=${tsUrl.length}` : "default api.tushare.pro"}`
+      : "empty → 现价不用 rt_k（可配 TUSHARE_TOKEN）"
+  );
 }
 
 const app = express();
@@ -515,7 +523,7 @@ app.listen(port, listenHost, () => {
   }
   startBuiltinQuoteScheduler(db, console.log);
   console.log(
-    "内置行情：每 5 分钟、交易时段内执行；配置 QUOTE_PRICE_URL（按代码）或 QUOTE_SYNC_URL（按名称 JSON）"
+    "内置行情：每 5 分钟、上海工作日拉价窗口内执行（默认 09:10–11:30、13:00–15:50，见 QUOTE_SYNC_*_START/END）；现价可配 TUSHARE_TOKEN（rt_k）或 QUOTE_PRICE_URL / QUOTE_SYNC_URL"
   );
   if ((process.env.QUOTE_KLINE_URL || "").trim()) {
     const d = historyCalendarDaysDefault();

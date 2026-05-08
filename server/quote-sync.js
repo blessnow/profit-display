@@ -1,6 +1,10 @@
 import { isCnAshareRegularSession } from "./market-hours.js";
 import { fetchPricesForCodes, normalizeStockCode } from "./market-quote.js";
 import { upsertDailySnapshots } from "./snapshots.js";
+import {
+  fetchPricesForCodesTushare,
+  isTushareQuoteEnabled,
+} from "./tushare-quote.js";
 
 async function fetchNamePriceMapFromEnv() {
   const url = (process.env.QUOTE_SYNC_URL || "").trim();
@@ -52,10 +56,14 @@ export async function runQuoteSync(db) {
 
   const priceTpl = (process.env.QUOTE_PRICE_URL || "").trim();
   const syncUrl = (process.env.QUOTE_SYNC_URL || "").trim();
+  const useTushare = isTushareQuoteEnabled();
 
-  if (!priceTpl && !syncUrl) {
+  if (!priceTpl && !syncUrl && !useTushare) {
     tryUpsertSnapshots(db);
-    return { skipped: true, reason: "QUOTE_PRICE_URL and QUOTE_SYNC_URL empty" };
+    return {
+      skipped: true,
+      reason: "no quote source (set TUSHARE_TOKEN and/or QUOTE_PRICE_URL / QUOTE_SYNC_URL)",
+    };
   }
 
   const codeRows = db
@@ -68,8 +76,12 @@ export async function runQuoteSync(db) {
     .filter(Boolean);
 
   let priceByCode = new Map();
-  if (priceTpl && codes.length > 0) {
-    priceByCode = await fetchPricesForCodes(codes, 6);
+  if (codes.length > 0) {
+    if (useTushare) {
+      priceByCode = await fetchPricesForCodesTushare(codes);
+    } else if (priceTpl) {
+      priceByCode = await fetchPricesForCodes(codes, 6);
+    }
   }
 
   let priceByName = null;
