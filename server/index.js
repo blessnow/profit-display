@@ -509,7 +509,7 @@ app.listen(port, listenHost, () => {
   logQuoteEnvDiagnostics();
   const { user, pass } = getAdminCredentials();
   console.log(`http://${listenHost}:${port}`);
-  console.log(`登录：HTTP Basic 用户「${user}」`);
+  console.log(`登录：Positions 认证，用户「${user}」`);
   if (!process.env.ADMIN_PASS) {
     console.log("未设置 ADMIN_PASS，当前使用默认密码：" + pass);
   }

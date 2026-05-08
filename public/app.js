@@ -901,13 +901,14 @@ document.getElementById("form-login").onsubmit = (e) => {
   const p = document.getElementById("login-pass").value;
   sessionStorage.setItem(
     AUTH_KEY,
-    "Basic " + btoa(unescape(encodeURIComponent(u + ":" + p)))
+    "Positions " + btoa(unescape(encodeURIComponent(u + ":" + p)))
   );
   refresh();
 };
 
 document.getElementById("btn-logout").onclick = () => {
   sessionStorage.removeItem(AUTH_KEY);
+  document.getElementById("login-pass").value = "";
   document.getElementById("accounts").classList.add("hidden");
   showLogin();
   document.getElementById("loading").textContent = "请先登录";

@@ -16,7 +16,13 @@ function safeEq(a, b) {
 }
 
 /**
- * 除 GET /api/health 外，所有 /api/* 需 Basic 与 ADMIN 一致
+ * 除 GET /api/health 外，所有 /api/* 需与 ADMIN 凭证一致。
+ *
+ * 使用自定义 Authorization scheme「Positions」（payload 仍为 base64(user:pass)），
+ * 避免浏览器缓存标准 HTTP Basic 后在「已退出」或新标签页仍自动附带 Basic 导致看似无法登出。
+ *
+ * 请求头：Authorization: Positions <base64>
+ * curl：curl -H "Authorization: Positions $(printf '%s' 'user:pass' | base64)" ...
  */
 export function basicAuthMiddleware() {
   const { user, pass } = getAdminCredentials();
@@ -24,10 +30,10 @@ export function basicAuthMiddleware() {
     if (!req.path.startsWith("/api")) return next();
     if (req.method === "GET" && req.path === "/api/health") return next();
 
-    const h = req.headers.authorization || "";
-    const m = /^Basic\s+(.+)$/i.exec(h);
+    const h = (req.headers.authorization || "").trim();
+    const m = /^Positions\s+(\S+)/i.exec(h);
     if (!m) {
-      res.setHeader("WWW-Authenticate", 'Basic realm="positions"');
+      res.setHeader("WWW-Authenticate", 'Positions realm="positions"');
       return res.status(401).json({ error: "需要登录" });
     }
     let decoded = "";
@@ -40,7 +46,7 @@ export function basicAuthMiddleware() {
     const u = idx >= 0 ? decoded.slice(0, idx) : "";
     const p = idx >= 0 ? decoded.slice(idx + 1) : "";
     if (!safeEq(u, user) || !safeEq(p, pass)) {
-      res.setHeader("WWW-Authenticate", 'Basic realm="positions"');
+      res.setHeader("WWW-Authenticate", 'Positions realm="positions"');
       return res.status(401).json({ error: "用户名或密码错误" });
     }
     next();
