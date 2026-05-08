@@ -463,8 +463,8 @@
             ]
         },
         {
-            "broker": "",
-            "account_name": "账户1",
+            "broker": "华宝证券",
+            "account_name": "月月",
             "account_type": "A股",
             "position_ratio": 64.2,
             "summary": {
