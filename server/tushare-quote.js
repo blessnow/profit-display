@@ -20,17 +20,32 @@ function rowsFromTushareData(data) {
   });
 }
 
+/** 上海日历 YYYYMMDD */
+function shanghaiYYYYMMDDCompact(date = new Date()) {
+  return new Intl.DateTimeFormat("sv-SE", {
+    timeZone: "Asia/Shanghai",
+  })
+    .format(date)
+    .replace(/-/g, "");
+}
+
+function tusharePostBase() {
+  return (
+    (process.env.TUSHARE_HTTP_URL || "").trim() ||
+    (process.env.TUSHARE_HTTP || "").trim() ||
+    (process.env.TUSHARE_API_URL || "").trim() ||
+    "https://api.tushare.pro"
+  ).replace(/\/+$/, "");
+}
+
 /**
- * TuShare Pro HTTP：与 Python pro_api 一致，POST JSON。
- * TUSHARE_TOKEN：必填；TUSHARE_HTTP_URL：可选，默认 https://api.tushare.pro（可填自建/代理根地址）。
+ * TuShare Pro HTTP：POST JSON（与 Python pro_api 一致）。
  */
 export async function tushareCall(apiName, params, fields) {
   const token = (process.env.TUSHARE_TOKEN || "").trim();
   if (!token) throw new Error("TUSHARE_TOKEN empty");
 
-  let base = (process.env.TUSHARE_HTTP_URL || "https://api.tushare.pro")
-    .trim()
-    .replace(/\/+$/, "");
+  const base = tusharePostBase();
   const res = await fetch(base, {
     method: "POST",
     headers: {
@@ -52,12 +67,37 @@ export async function tushareCall(apiName, params, fields) {
   return body.data;
 }
 
-/**
- * 使用 rt_k（当日实时日线）批量取现价，close 为最新价。
- * 单次 ts_code 可逗号拼接多只股票（与官方文档一致）。
- */
-export async function fetchPricesForCodesTushare(codes, chunkSize = 80) {
-  const uniq = [...new Set(codes.map(normalizeStockCode).filter(Boolean))];
+/** 最近 N 个自然日（上海日历）的区间，用于 daily 取最新收盘 */
+function dailyDateRangeCompact() {
+  const days = Math.min(
+    60,
+    Math.max(
+      7,
+      Number(process.env.TUSHARE_DAILY_LOOKBACK_DAYS) || 20
+    )
+  );
+  const end = shanghaiYYYYMMDDCompact();
+  const start = shanghaiYYYYMMDDCompact(
+    new Date(Date.now() - days * 86400000)
+  );
+  return { start, end };
+}
+
+async function fetchCloseViaDaily(tsCode) {
+  const { start, end } = dailyDateRangeCompact();
+  const data = await tushareCall(
+    "daily",
+    { ts_code: tsCode, start_date: start, end_date: end },
+    "trade_date,close"
+  );
+  const rows = rowsFromTushareData(data);
+  if (!rows.length) return null;
+  const last = rows[rows.length - 1];
+  const close = Number(last.close);
+  return Number.isFinite(close) && close > 0 ? close : null;
+}
+
+async function fetchViaRtK(uniq, chunkSize) {
   const map = new Map();
   const n = Math.max(10, Math.min(200, chunkSize));
 
@@ -77,6 +117,50 @@ export async function fetchPricesForCodesTushare(codes, chunkSize = 80) {
       if (code && Number.isFinite(close) && close > 0) map.set(code, close);
     }
   }
+  return map;
+}
+
+/**
+ * 优先 rt_k（当日）；若自建网关 rt_k 恒为空（常见），再按代码调 daily 取区间内最新收盘。
+ * TUSHARE_SKIP_RT_K=1 跳过 rt_k，直接 daily（省一次空请求）。
+ */
+export async function fetchPricesForCodesTushare(codes, chunkSize = 80) {
+  const uniq = [...new Set(codes.map(normalizeStockCode).filter(Boolean))];
+  let map = new Map();
+
+  const skipRtK = process.env.TUSHARE_SKIP_RT_K === "1";
+  if (!skipRtK) {
+    map = await fetchViaRtK(uniq, chunkSize);
+  }
+
+  const missing = uniq.filter((c) => !map.has(c));
+  if (missing.length === 0) return map;
+
+  console.warn(
+    `[tushare] filling ${missing.length}/${uniq.length} codes via daily (rt_k empty or skipped; 自建网关常如此)`
+  );
+
+  const rawConc = Number(process.env.TUSHARE_DAILY_CONCURRENCY);
+  const concurrency = Number.isFinite(rawConc)
+    ? Math.min(16, Math.max(1, Math.floor(rawConc)))
+    : 6;
+
+  for (let i = 0; i < missing.length; i += concurrency) {
+    const batch = missing.slice(i, i + concurrency);
+    await Promise.all(
+      batch.map(async (code6) => {
+        const ts = codeToTsCode(code6);
+        if (!ts) return;
+        try {
+          const px = await fetchCloseViaDaily(ts);
+          if (px != null) map.set(code6, px);
+        } catch (e) {
+          console.warn("[tushare] daily failed", code6, e.message || e);
+        }
+      })
+    );
+  }
+
   return map;
 }
 

@@ -64,12 +64,16 @@ function logQuoteEnvDiagnostics() {
   );
   console.log("[env] QUOTE_SYNC_URL:", sy ? `set len=${sy.length}` : "empty");
   const tsTok = (process.env.TUSHARE_TOKEN || "").trim();
-  const tsUrl = (process.env.TUSHARE_HTTP_URL || "").trim();
+  const tsUrl = (
+    (process.env.TUSHARE_HTTP_URL || "").trim() ||
+    (process.env.TUSHARE_HTTP || "").trim() ||
+    (process.env.TUSHARE_API_URL || "").trim()
+  );
   console.log(
     "[env] TUSHARE:",
     tsTok
-      ? `token set len=${tsTok.length} http_url=${tsUrl ? `set len=${tsUrl.length}` : "default api.tushare.pro"}`
-      : "empty → 现价不用 rt_k（可配 TUSHARE_TOKEN）"
+      ? `token len=${tsTok.length} http len=${tsUrl ? tsUrl.length : "default api.tushare.pro"} skip_rt_k=${process.env.TUSHARE_SKIP_RT_K === "1" ? "1" : "0"} (rt_k 空时自动 daily)`
+      : "empty → 现价不用 TuShare（可配 TUSHARE_TOKEN）"
   );
 }
 
