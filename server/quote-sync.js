@@ -126,23 +126,28 @@ export async function runQuoteSync(db) {
 }
 
 export function startBuiltinQuoteScheduler(db, log) {
+  const L = log || console.log;
   const intervalMs = 5 * 60 * 1000;
   const tick = async () => {
     if (!isCnAshareRegularSession()) return;
     try {
       const r = await runQuoteSync(db);
-      if (!r.skipped && r.updated > 0) {
-        (log || console.log).call(
-          null,
-          "[quote-sync] updated",
-          r.updated,
-          "rows"
-        );
+      if (r.skipped) {
+        L.call(null, "[quote-sync] skipped:", r.reason || "");
+        return;
       }
+      L.call(
+        null,
+        "[quote-sync] tick",
+        "updated_rows=" + r.updated,
+        "price_by_code=" + r.codesFetched,
+        "name_map=" + (r.nameMapSize ?? 0)
+      );
     } catch (e) {
-      (log || console.error).call(null, "[quote-sync]", e.message || e);
+      (log || console.error).call(null, "[quote-sync] error:", e.message || e);
     }
   };
   const id = setInterval(tick, intervalMs);
+  void tick();
   return () => clearInterval(id);
 }
