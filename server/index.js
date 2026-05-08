@@ -523,7 +523,7 @@ app.listen(port, listenHost, () => {
   }
   startBuiltinQuoteScheduler(db, console.log);
   console.log(
-    "内置行情：每 5 分钟、上海工作日拉价窗口内执行（默认 09:10–11:30、13:00–15:50，见 QUOTE_SYNC_*_START/END）；现价可配 TUSHARE_TOKEN（rt_k）或 QUOTE_PRICE_URL / QUOTE_SYNC_URL"
+    "内置行情：每 5 分钟、上海工作日连续窗口内执行（默认 09:10–15:50，见 QUOTE_SYNC_SESSION_START/END）；启动时立即拉一次；现价可配 TUSHARE_TOKEN（rt_k）或 QUOTE_PRICE_URL / QUOTE_SYNC_URL"
   );
   if ((process.env.QUOTE_KLINE_URL || "").trim()) {
     const d = historyCalendarDaysDefault();

@@ -1,8 +1,8 @@
 /**
- * 内置定时拉价时段（上海时区、工作日）：默认 09:10–11:30、13:00–15:50。
- * （覆盖集合竞价起至收盘后延长段；午休 11:30–13:00 不拉。）
- * 可用环境变量覆盖（24h HH:MM）：
- *   QUOTE_SYNC_AM_START QUOTE_SYNC_AM_END QUOTE_SYNC_PM_START QUOTE_SYNC_PM_END
+ * 内置定时拉价时段（上海时区、工作日）：连续区间，默认 09:10–15:50（含午休，每 5 分钟一次）。
+ * 环境变量（HH:MM）：
+ *   QUOTE_SYNC_SESSION_START / QUOTE_SYNC_SESSION_END
+ * 兼容旧变量（仅当新变量未设时）：QUOTE_SYNC_AM_START、QUOTE_SYNC_PM_END
  *
  * 日快照「冻结市值」仍以交易所 15:00 为基准，见 `SNAPSHOT_FREEZE_DELAY_MIN_AFTER_1500` 等（与拉价窗口独立）。
  *
@@ -17,6 +17,19 @@ function minuteOfDayFromEnv(key, defaultHour, defaultMinute) {
   const M = Number(m[2]);
   if (!Number.isFinite(H) || !Number.isFinite(M)) return defaultHour * 60 + defaultMinute;
   return H * 60 + M;
+}
+
+/** 当日拉价窗口起止（上海，分钟数自 00:00） */
+function quoteSyncSessionBoundsMinuteOfDay() {
+  const startKey = (process.env.QUOTE_SYNC_SESSION_START || "").trim()
+    ? "QUOTE_SYNC_SESSION_START"
+    : "QUOTE_SYNC_AM_START";
+  const endKey = (process.env.QUOTE_SYNC_SESSION_END || "").trim()
+    ? "QUOTE_SYNC_SESSION_END"
+    : "QUOTE_SYNC_PM_END";
+  const start = minuteOfDayFromEnv(startKey, 9, 10);
+  const end = minuteOfDayFromEnv(endKey, 15, 50);
+  return { start, end };
 }
 function cnAshareExtendMinAfter1500() {
   const raw = Number(process.env.QUOTE_SESSION_EXTEND_MIN_AFTER_1500);
@@ -52,11 +65,8 @@ export function isCnAshareRegularSession(date = new Date()) {
   const H = Number(parts.find((p) => p.type === "hour")?.value ?? 0);
   const M = Number(parts.find((p) => p.type === "minute")?.value ?? 0);
   const t = H * 60 + M;
-  const openM = minuteOfDayFromEnv("QUOTE_SYNC_AM_START", 9, 10);
-  const closeAm = minuteOfDayFromEnv("QUOTE_SYNC_AM_END", 11, 30);
-  const openPm = minuteOfDayFromEnv("QUOTE_SYNC_PM_START", 13, 0);
-  const closePmQuote = minuteOfDayFromEnv("QUOTE_SYNC_PM_END", 15, 50);
-  return (t >= openM && t <= closeAm) || (t >= openPm && t <= closePmQuote);
+  const { start, end } = quoteSyncSessionBoundsMinuteOfDay();
+  return t >= start && t <= end;
 }
 
 /** 上海日历下的周一至周五 */
