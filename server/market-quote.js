@@ -137,9 +137,22 @@ export async function suggestStocks(query) {
   const tpl = (process.env.QUOTE_SUGGEST_URL || "").trim();
   if (!tpl || !tpl.includes("{{q}}")) return { items: [] };
 
-  const url = expandTemplate(tpl, { q });
-  const body = await fetchJson(url);
+  async function fetchSuggestBody(input) {
+    const url = expandTemplate(tpl, { q: input });
+    return fetchJson(url);
+  }
+
+  let body = await fetchSuggestBody(q);
   let items = parseEastmoneySuggest(body).slice(0, 16);
+  // 东财 type=14：两字母拼音常被美股/板块占位，补一次「+s」常见能落到 A 股（如 hb→hbs→和邦生物）
+  if (
+    items.length === 0 &&
+    /^[A-Za-z]{2}$/.test(q) &&
+    tpl.includes("eastmoney.com")
+  ) {
+    body = await fetchSuggestBody(q + "s").catch(() => body);
+    items = parseEastmoneySuggest(body).slice(0, 16);
+  }
 
   const priceTpl = (process.env.QUOTE_PRICE_URL || "").trim();
   if (priceTpl.includes("{{symbol}}") && items.length) {

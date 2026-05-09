@@ -63,6 +63,13 @@ function logQuoteEnvDiagnostics() {
       : "EMPTY"
   );
   console.log("[env] QUOTE_SYNC_URL:", sy ? `set len=${sy.length}` : "empty");
+  const sg = (process.env.QUOTE_SUGGEST_URL || "").trim();
+  console.log(
+    "[env] QUOTE_SUGGEST_URL:",
+    sg
+      ? `set len=${sg.length} {{q}}:${sg.includes("{{q}}")}`
+      : "empty → 交易联想无结果（可配东财 suggest 模板）"
+  );
   const tsTok = (process.env.TUSHARE_TOKEN || "").trim();
   const tsUrl = (
     (process.env.TUSHARE_HTTP_URL || "").trim() ||

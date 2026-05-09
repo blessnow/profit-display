@@ -90,7 +90,7 @@ async function loadSuggest(q) {
     const items = j.items || [];
     if (!items.length) {
       box.innerHTML =
-        '<div class="sx" style="padding:0.5rem 0.65rem;color:var(--muted)">无联想结果（请配置 QUOTE_SUGGEST_URL）</div>';
+        '<div class="sx" style="padding:0.5rem 0.65rem;color:var(--muted)">无联想结果：试试中文简称、6 位代码，或拼音多打 1～2 个字母（两字母拼音常被其它市场占位）</div>';
       box.classList.remove("hidden");
       return;
     }
