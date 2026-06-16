@@ -174,6 +174,20 @@ function sumAccountsCumulativePnl(accounts) {
   return s;
 }
 
+function sumAccountsDailyProfit(accounts) {
+  if (!accounts?.length) return null;
+  let s = 0;
+  let any = false;
+  for (const a of accounts) {
+    const v = a.summary?.daily_profit;
+    if (Number.isFinite(v)) {
+      s += v;
+      any = true;
+    }
+  }
+  return any ? Math.round(s * 100) / 100 : null;
+}
+
 /** account_cumulative：已实现累计 + 持仓浮动（快照绝对额） */
 function enrichPointsWithCumulativeMoney(ptsSorted) {
   if (!ptsSorted.length) return [];
@@ -536,6 +550,13 @@ function renderAccounts(data, charts) {
   const multi = list.length > 1;
   const totalSummary = buildTotalChartSummary(charts);
   const totalCum = sumAccountsCumulativePnl(list);
+  const totalDaily = sumAccountsDailyProfit(list);
+  const totalDailyBanner =
+    totalDaily != null
+      ? `<div class="broker" style="margin-bottom:0.35rem">今日收益（合计·元）= 各账户「今日累计收益 − 昨日」：<strong class="${clsPnL(
+          totalDaily
+        )}">${fmt(totalDaily)}</strong></div>`
+      : "";
   const totalCumBanner =
     totalCum != null && Number.isFinite(totalCum)
       ? `<div class="broker" style="margin-bottom:0.35rem">账户累计收益（合计·元）= 各账户已实现累计 + 持仓浮动：<strong class="${clsPnL(
@@ -546,7 +567,7 @@ function renderAccounts(data, charts) {
     multi && charts
       ? `<section class="account chart-summary-account">
       <div class="account-head"><div><h2>全部账户汇总</h2><div class="broker">曲线为各账户「已实现累计+持仓浮动」按日合计（写入当日快照）</div></div></div>
-      ${totalCumBanner}<div class="chart-panel">${renderAccountCumulativeChart(
+      ${totalDailyBanner}${totalCumBanner}<div class="chart-panel">${renderAccountCumulativeChart(
         charts.total || [],
         {
           title: "账户累计收益（合计·元）",
@@ -599,6 +620,15 @@ function renderOneAccount(a, charts) {
         <div><span>总资产</span><strong>${fmt(s.total_assets)}</strong></div>
         <div><span>持仓市值</span><strong>${fmt(s.market_value)}</strong></div>
         <div><span>可用资金</span><strong>${fmt(s.available_cash)}</strong></div>
+        <div><span>今日收益</span><strong class="${clsPnL(
+          s.daily_profit
+        )}">${fmt(s.daily_profit)}</strong>${
+    s.daily_profit_pct != null
+      ? `<span class="muted" style="margin-left:0.35rem;font-size:0.8em">${fmtPct(
+          s.daily_profit_pct
+        )}</span>`
+      : ""
+  }</div>
         <div><span>持仓盈亏</span><strong class="${clsPnL(
           s.total_profit
         )}">${fmt(s.total_profit)}</strong></div>
@@ -626,6 +656,7 @@ function renderOneAccount(a, charts) {
             <th>成本</th>
             <th>现价</th>
             <th>市值</th>
+            <th>今日收益</th>
             <th>盈亏</th>
             <th>收益率</th>
             <th></th>
@@ -651,6 +682,16 @@ function renderOneAccount(a, charts) {
               <td>${fmt(h.cost_price)}</td>
               <td>${fmt(h.current_price)}</td>
               <td>${fmt(h.market_value)}</td>
+              <td class="${clsPnL(h.day_profit)}">${
+                h.day_profit != null
+                  ? fmt(h.day_profit) +
+                    (h.day_profit_pct != null
+                      ? ` <span class="muted" style="font-size:0.8em">${fmtPct(
+                          h.day_profit_pct
+                        )}</span>`
+                      : "")
+                  : "—"
+              }</td>
               <td class="${clsPnL(h.profit)}">${fmt(h.profit)}</td>
               <td class="${clsPnL(h.profit)}">${fmtPct(h.profit_pct)}</td>
               <td class="row-trade-btns"><button type="button" class="small btn-add-pos" data-account="${

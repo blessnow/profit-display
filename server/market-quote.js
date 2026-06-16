@@ -116,6 +116,19 @@ export async function fetchPriceBySecid(secid, urlTemplate) {
   return parseEastmoneyF43(f43);
 }
 
+/** 东财 qt/stock/get：f43 现价、f60 昨收（同为分/×100 整数） */
+export async function fetchQuoteBySecid(secid, urlTemplate) {
+  if (!urlTemplate || !String(urlTemplate).includes("{{secid}}")) {
+    return { price: null, prevClose: null };
+  }
+  const url = expandTemplate(urlTemplate, { secid });
+  const body = await fetchJson(url);
+  return {
+    price: parseEastmoneyF43(body?.data?.f43),
+    prevClose: parseEastmoneyF43(body?.data?.f60),
+  };
+}
+
 /** Yahoo v8 chart：meta.regularMarketPrice */
 export function parseYahooChartMetaPrice(body) {
   const meta = body?.chart?.result?.[0]?.meta;
@@ -124,11 +137,54 @@ export function parseYahooChartMetaPrice(body) {
   return Number(px);
 }
 
+/** Yahoo v8 chart：meta.chartPreviousClose（优先）/ meta.previousClose = 昨收 */
+export function parseYahooChartMetaPrevClose(body) {
+  const meta = body?.chart?.result?.[0]?.meta;
+  const pc = meta?.chartPreviousClose ?? meta?.previousClose;
+  const n = Number(pc);
+  return Number.isFinite(n) && n > 0 ? n : null;
+}
+
 export async function fetchPriceByYahooSymbol(symbol, urlTemplate) {
   if (!urlTemplate || !String(urlTemplate).includes("{{symbol}}")) return null;
   const url = expandTemplate(urlTemplate, { symbol });
   const body = await fetchJson(url);
   return parseYahooChartMetaPrice(body);
+}
+
+/**
+ * 昨收 = 日 K 收盘序列里「严格早于上海今日」的最近一根收盘。
+ * meta.chartPreviousClose 是相对 range 起点（5d 即约 6 个交易日前）的收盘，并非昨收，
+ * 故优先用 indicators 的逐日收盘；取不到再退回 meta（聊胜于无）。
+ */
+export function yahooPrevCloseFromBody(body) {
+  const today = new Date().toLocaleDateString("sv-SE", {
+    timeZone: "Asia/Shanghai",
+  });
+  const byDay = parseYahooChartClosesByDay(body);
+  let bestDay = null;
+  let bestClose = null;
+  for (const [day, close] of byDay) {
+    if (day < today && (bestDay == null || day > bestDay)) {
+      bestDay = day;
+      bestClose = close;
+    }
+  }
+  if (bestClose != null && bestClose > 0) return Math.round(bestClose * 100) / 100;
+  return parseYahooChartMetaPrevClose(body);
+}
+
+/** 现价 + 昨收一次取回（同一响应免额外请求） */
+export async function fetchQuoteByYahooSymbol(symbol, urlTemplate) {
+  if (!urlTemplate || !String(urlTemplate).includes("{{symbol}}")) {
+    return { price: null, prevClose: null };
+  }
+  const url = expandTemplate(urlTemplate, { symbol });
+  const body = await fetchJson(url);
+  return {
+    price: parseYahooChartMetaPrice(body),
+    prevClose: yahooPrevCloseFromBody(body),
+  };
 }
 
 export async function suggestStocks(query) {
@@ -207,6 +263,42 @@ export async function fetchPricesForCodes(codes, concurrency = 6) {
           px = await fetchPriceBySecid(secid, priceTpl).catch(() => null);
         }
         if (px != null && px > 0) map.set(code, px);
+      })
+    );
+  }
+  return map;
+}
+
+/** 按 6 位代码批量拉「现价 + 昨收」（分批并发）→ Map<code, {price, prevClose}> */
+export async function fetchQuotesForCodes(codes, concurrency = 6) {
+  const priceTpl = (process.env.QUOTE_PRICE_URL || "").trim();
+  const useSym = priceTpl.includes("{{symbol}}");
+  const useSec = priceTpl.includes("{{secid}}");
+  if (!priceTpl || (!useSym && !useSec)) {
+    return new Map();
+  }
+  const uniq = [...new Set(codes.map(normalizeStockCode).filter(Boolean))];
+  const map = new Map();
+  const n = Math.max(1, Math.min(concurrency, 12));
+  for (let off = 0; off < uniq.length; off += n) {
+    const batch = uniq.slice(off, off + n);
+    await Promise.all(
+      batch.map(async (code) => {
+        let q = { price: null, prevClose: null };
+        if (useSym) {
+          const sym = codeToYahooSymbol(code);
+          if (sym)
+            q = await fetchQuoteByYahooSymbol(sym, priceTpl).catch(() => q);
+        } else {
+          const secid = guessSecidFromCode(code);
+          q = await fetchQuoteBySecid(secid, priceTpl).catch(() => q);
+        }
+        if (q && q.price != null && q.price > 0) {
+          map.set(code, {
+            price: q.price,
+            prevClose: q.prevClose != null && q.prevClose > 0 ? q.prevClose : null,
+          });
+        }
       })
     );
   }

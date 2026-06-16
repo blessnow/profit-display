@@ -164,6 +164,49 @@ export async function fetchPricesForCodesTushare(codes, chunkSize = 80) {
   return map;
 }
 
+/** 昨收 = 区间内 trade_date 严格早于今日的最近一根日 K 收盘（避免今日 bar 是否已出的歧义） */
+async function fetchPrevCloseViaDaily(tsCode, todayCompact) {
+  const { start, end } = dailyDateRangeCompact();
+  const data = await tushareCall(
+    "daily",
+    { ts_code: tsCode, start_date: start, end_date: end },
+    "trade_date,close"
+  );
+  const rows = rowsFromTushareData(data)
+    .filter((r) => String(r.trade_date) < todayCompact)
+    .sort((a, b) => String(a.trade_date).localeCompare(String(b.trade_date)));
+  if (!rows.length) return null;
+  const close = Number(rows[rows.length - 1].close);
+  return Number.isFinite(close) && close > 0 ? close : null;
+}
+
+/** 批量昨收 → Map<code6, prevClose>（每代码一次 daily，按并发限速） */
+export async function fetchPrevCloseForCodesTushare(codes) {
+  const uniq = [...new Set(codes.map(normalizeStockCode).filter(Boolean))];
+  const todayCompact = shanghaiYYYYMMDDCompact();
+  const map = new Map();
+  const rawConc = Number(process.env.TUSHARE_DAILY_CONCURRENCY);
+  const concurrency = Number.isFinite(rawConc)
+    ? Math.min(16, Math.max(1, Math.floor(rawConc)))
+    : 6;
+  for (let i = 0; i < uniq.length; i += concurrency) {
+    const batch = uniq.slice(i, i + concurrency);
+    await Promise.all(
+      batch.map(async (code6) => {
+        const ts = codeToTsCode(code6);
+        if (!ts) return;
+        try {
+          const pc = await fetchPrevCloseViaDaily(ts, todayCompact);
+          if (pc != null) map.set(code6, pc);
+        } catch (e) {
+          console.warn("[tushare] prev_close daily failed", code6, e.message || e);
+        }
+      })
+    );
+  }
+  return map;
+}
+
 export function isTushareQuoteEnabled() {
   return !!(process.env.TUSHARE_TOKEN || "").trim();
 }

@@ -86,6 +86,12 @@ function migrate(db) {
   if (!cols.some((c) => c.name === "stock_code")) {
     db.exec("ALTER TABLE holdings ADD COLUMN stock_code TEXT");
   }
+  if (!cols.some((c) => c.name === "prev_close")) {
+    db.exec("ALTER TABLE holdings ADD COLUMN prev_close REAL");
+  }
+  if (!cols.some((c) => c.name === "prev_close_day")) {
+    db.exec("ALTER TABLE holdings ADD COLUMN prev_close_day TEXT");
+  }
 }
 
 export function seedFromJson(db, jsonPath) {
