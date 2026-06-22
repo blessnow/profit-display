@@ -73,63 +73,152 @@
             ]
         },
         {
-            "broker": "中信建投证券",
-            "account_name": "五月",
+            "broker": "金融街证券（原恒泰）",
+            "account_name": "6608",
             "account_type": "人民币账户 CNY A股",
-            "position_ratio": 99.9,
+            "position_ratio": 99.1,
             "summary": {
-                "total_assets": 2882842.71,
-                "total_profit": 82769.23,
-                "daily_profit": -28459,
-                "daily_profit_pct": -0.98,
-                "market_value": 2881864,
-                "available_cash": 978.71,
-                "withdrawable_cash": 978.71
+                "total_assets": 851344.97,
+                "total_profit": 145313.42,
+                "daily_profit": 27146.00,
+                "daily_profit_pct": 3.29,
+                "market_value": 843684,
+                "available_cash": 7660.97,
+                "withdrawable_cash": 0.00
             },
             "holdings": [
                 {
-                    "stock_name": "雪峰科技",
-                    "market_value": 486465,
-                    "profit": -24044.52,
-                    "profit_pct": -4.714,
-                    "position": 56500,
-                    "available": 56500,
-                    "cost_price": 9.036,
-                    "current_price": 8.61,
-                    "stock_code": "603227"
+                    "stock_name": "国泰集团",
+                    "market_value": 385956,
+                    "profit": 117728.07,
+                    "profit_pct": 44.010,
+                    "position": 28400,
+                    "available": 28400,
+                    "cost_price": 9.437,
+                    "current_price": 13.59,
+                    "stock_code": "603977"
                 },
                 {
-                    "stock_name": "凯龙股份",
-                    "market_value": 305956,
-                    "profit": -27516.68,
-                    "profit_pct": -8.249,
-                    "position": 34300,
-                    "available": 34300,
-                    "cost_price": 9.722,
-                    "current_price": 8.92,
-                    "stock_code": "002783"
+                    "stock_name": "恒邦股份",
+                    "market_value": 457728,
+                    "profit": 27585.35,
+                    "profit_pct": 6.480,
+                    "position": 29800,
+                    "available": 29800,
+                    "cost_price": 14.425,
+                    "current_price": 15.36,
+                    "stock_code": "002237"
+                }
+            ]
+        },
+        {
+            "broker": "国金证券",
+            "account_name": "还能哥",
+            "account_type": "人民币账户 CNY A股",
+            "position_ratio": 99.6,
+            "summary": {
+                "total_assets": 1553652.09,
+                "total_profit": 61262.67,
+                "daily_profit": 76384.00,
+                "daily_profit_pct": 5.17,
+                "market_value": 1548182,
+                "available_cash": 5470.09,
+                "withdrawable_cash": 469.89
+            },
+            "holdings": [
+                {
+                    "stock_name": "广信股份",
+                    "market_value": 427986,
+                    "profit": -22583.09,
+                    "profit_pct": -4.960,
+                    "position": 40300,
+                    "available": 40300,
+                    "cost_price": 11.174,
+                    "current_price": 10.62,
+                    "stock_code": "603599"
                 },
+                {
+                    "stock_name": "惠科股份",
+                    "market_value": 5060,
+                    "profit": -8.03,
+                    "profit_pct": 0.0,
+                    "position": 500,
+                    "available": 500,
+                    "cost_price": 10.12,
+                    "current_price": 10.12,
+                    "stock_code": "001399"
+                },
+                {
+                    "stock_name": "恒邦股份",
+                    "market_value": 1115136,
+                    "profit": 83853.79,
+                    "profit_pct": 8.200,
+                    "position": 72600,
+                    "available": 72600,
+                    "cost_price": 14.196,
+                    "current_price": 15.36,
+                    "stock_code": "002237"
+                }
+            ]
+        },
+        {
+            "broker": "中信建投证券",
+            "account_name": "五月",
+            "account_type": "人民币账户 CNY A股",
+            "position_ratio": 99.5,
+            "summary": {
+                "total_assets": 2495427.71,
+                "total_profit": -304645.77,
+                "daily_profit": 53866.00,
+                "daily_profit_pct": 2.21,
+                "market_value": 2482544,
+                "available_cash": 12883.71,
+                "withdrawable_cash": 12883.71
+            },
+            "holdings": [
                 {
                     "stock_name": "岳阳兴长",
-                    "market_value": 1137264,
-                    "profit": -3401.29,
-                    "profit_pct": -0.299,
+                    "market_value": 902016,
+                    "profit": -238649.29,
+                    "profit_pct": -20.923,
                     "position": 69600,
                     "available": 69600,
                     "cost_price": 16.389,
-                    "current_price": 16.34,
+                    "current_price": 12.96,
                     "stock_code": "000819"
                 },
                 {
                     "stock_name": "安纳达",
-                    "market_value": 952179,
-                    "profit": 137731.72,
-                    "profit_pct": 16.913,
+                    "market_value": 904854,
+                    "profit": 90406.72,
+                    "profit_pct": 11.103,
                     "position": 63100,
                     "available": 63100,
                     "cost_price": 12.907,
-                    "current_price": 15.09,
+                    "current_price": 14.34,
                     "stock_code": "002136"
+                },
+                {
+                    "stock_name": "凯龙股份",
+                    "market_value": 246274,
+                    "profit": -83768.68,
+                    "profit_pct": -25.379,
+                    "position": 34300,
+                    "available": 34300,
+                    "cost_price": 9.622,
+                    "current_price": 7.18,
+                    "stock_code": "002783"
+                },
+                {
+                    "stock_name": "雪峰科技",
+                    "market_value": 429400,
+                    "profit": -72634.52,
+                    "profit_pct": -14.472,
+                    "position": 56500,
+                    "available": 56500,
+                    "cost_price": 8.886,
+                    "current_price": 7.6,
+                    "stock_code": "603227"
                 }
             ]
         },
@@ -137,267 +226,226 @@
             "broker": "国投证券",
             "account_name": "成灿",
             "account_type": "A股",
-            "position_ratio": 99.8,
+            "position_ratio": 99.9,
             "summary": {
-                "total_assets": 1194860.6,
-                "total_profit": 184013.59,
-                "daily_profit": -26484,
-                "daily_profit_pct": -2.17,
-                "market_value": 1193060,
-                "available_cash": 1800.6,
-                "withdrawable_cash": 1800.6
+                "total_assets": 1025425.33,
+                "total_profit": -2510.98,
+                "daily_profit": 22474.00,
+                "daily_profit_pct": 2.24,
+                "market_value": 1023933,
+                "available_cash": 1492.33,
+                "withdrawable_cash": 1492.33
             },
             "holdings": [
                 {
-                    "stock_name": "国泰集团",
-                    "market_value": 300979,
-                    "profit": 34022.55,
-                    "profit_pct": 12.745,
-                    "position": 21700,
-                    "available": 21700,
-                    "cost_price": 12.302,
-                    "current_price": 13.87,
-                    "stock_code": "603977"
-                },
-                {
-                    "stock_name": "广信股份",
-                    "market_value": 123255,
-                    "profit": 23313.48,
-                    "profit_pct": 23.327,
-                    "position": 8300,
-                    "available": 8300,
-                    "cost_price": 12.041,
-                    "current_price": 14.85,
-                    "stock_code": "603599"
-                },
-                {
-                    "stock_name": "君正集团",
-                    "market_value": 283972,
-                    "profit": 16750.48,
-                    "profit_pct": 6.268,
-                    "position": 50800,
-                    "available": 50800,
-                    "cost_price": 5.26,
-                    "current_price": 5.59,
-                    "stock_code": "601216"
-                },
-                {
                     "stock_name": "安纳达",
-                    "market_value": 209751,
-                    "profit": 35709.4,
-                    "profit_pct": 20.518,
+                    "market_value": 199326,
+                    "profit": 25284.40,
+                    "profit_pct": 14.528,
                     "position": 13900,
                     "available": 13900,
                     "cost_price": 12.521,
-                    "current_price": 15.09,
+                    "current_price": 14.34,
                     "stock_code": "002136"
                 },
                 {
                     "stock_name": "安迪苏",
-                    "market_value": 275103,
-                    "profit": 74217.68,
-                    "profit_pct": 36.945,
+                    "market_value": 196236,
+                    "profit": -4649.32,
+                    "profit_pct": -2.314,
                     "position": 20700,
                     "available": 20700,
                     "cost_price": 9.705,
-                    "current_price": 13.29,
+                    "current_price": 9.48,
                     "stock_code": "600299"
+                },
+                {
+                    "stock_name": "广信股份",
+                    "market_value": 333468,
+                    "profit": -51092.61,
+                    "profit_pct": -13.286,
+                    "position": 31400,
+                    "available": 31400,
+                    "cost_price": 12.247,
+                    "current_price": 10.62,
+                    "stock_code": "603599"
+                },
+                {
+                    "stock_name": "国泰集团",
+                    "market_value": 294903,
+                    "profit": 27946.55,
+                    "profit_pct": 10.469,
+                    "position": 21700,
+                    "available": 21700,
+                    "cost_price": 12.302,
+                    "current_price": 13.59,
+                    "stock_code": "603977"
                 }
             ]
         },
         {
             "broker": "国泰海通证券",
             "account_name": "淡雅",
-            "position_ratio": null,
+            "account_type": "人民币账户 CNY A股",
+            "position_ratio": 99.9,
             "summary": {
-                "total_assets": 914035.83,
-                "total_profit": 116326.47,
-                "daily_profit": -9305,
-                "daily_profit_pct": -1.01,
-                "market_value": 912872,
-                "available_cash": 1163.83,
-                "withdrawable_cash": 1163.83
+                "total_assets": 837275.94,
+                "total_profit": -64883.67,
+                "daily_profit": 12084.00,
+                "daily_profit_pct": 1.46,
+                "market_value": 836434,
+                "available_cash": 841.94,
+                "withdrawable_cash": 841.94
             },
             "holdings": [
                 {
-                    "stock_name": "昊华科技",
-                    "market_value": 254800,
-                    "profit": 70243.08,
-                    "profit_pct": 38.06,
-                    "position": 7000,
-                    "available": 7000,
-                    "cost_price": 26.365,
-                    "current_price": 36.4,
-                    "stock_code": "600378"
-                },
-                {
-                    "stock_name": "鲁北化工",
-                    "market_value": 53262,
-                    "profit": 3482.5,
-                    "profit_pct": 6.996,
-                    "position": 6600,
-                    "available": 6600,
-                    "cost_price": 7.542,
-                    "current_price": 8.07,
-                    "stock_code": "600727"
-                },
-                {
-                    "stock_name": "君正集团",
-                    "market_value": 64285,
-                    "profit": 4223.4,
-                    "profit_pct": 7.032,
-                    "position": 11500,
-                    "available": 11500,
-                    "cost_price": 5.223,
-                    "current_price": 5.59,
-                    "stock_code": "601216"
-                },
-                {
-                    "stock_name": "雪峰科技",
-                    "market_value": 220416,
-                    "profit": -7968.89,
-                    "profit_pct": -3.489,
-                    "position": 25600,
-                    "available": 25600,
-                    "cost_price": 8.921,
-                    "current_price": 8.61,
-                    "stock_code": "603227"
-                },
-                {
-                    "stock_name": "和邦生物",
-                    "market_value": 51800,
-                    "profit": 28001.68,
-                    "profit_pct": 117.662,
-                    "position": 17500,
-                    "available": 17500,
-                    "cost_price": 1.36,
-                    "current_price": 2.96,
-                    "stock_code": "603077"
-                },
-                {
-                    "stock_name": "盾安环境",
-                    "market_value": 155344,
-                    "profit": -14897,
-                    "profit_pct": -8.751,
-                    "position": 13300,
-                    "available": 13300,
-                    "cost_price": 12.8,
-                    "current_price": 11.68,
-                    "stock_code": "002011"
-                },
-                {
                     "stock_name": "安迪苏",
-                    "market_value": 112965,
-                    "profit": 33241.7,
-                    "profit_pct": 41.696,
+                    "market_value": 80580,
+                    "profit": 856.70,
+                    "profit_pct": 1.075,
                     "position": 8500,
                     "available": 8500,
                     "cost_price": 9.379,
-                    "current_price": 13.29,
+                    "current_price": 9.48,
                     "stock_code": "600299"
+                },
+                {
+                    "stock_name": "和邦生物",
+                    "market_value": 44100,
+                    "profit": 20301.68,
+                    "profit_pct": 85.307,
+                    "position": 17500,
+                    "available": 17500,
+                    "cost_price": 1.36,
+                    "current_price": 2.52,
+                    "stock_code": "603077"
+                },
+                {
+                    "stock_name": "雪峰科技",
+                    "market_value": 194560,
+                    "profit": -29984.89,
+                    "profit_pct": -13.354,
+                    "position": 25600,
+                    "available": 25600,
+                    "cost_price": 8.771,
+                    "current_price": 7.6,
+                    "stock_code": "603227"
+                },
+                {
+                    "stock_name": "广信股份",
+                    "market_value": 517194,
+                    "profit": -56057.16,
+                    "profit_pct": -9.779,
+                    "position": 48700,
+                    "available": 48700,
+                    "cost_price": 11.771,
+                    "current_price": 10.62,
+                    "stock_code": "603599"
                 }
             ]
         },
         {
             "broker": "国泰海通证券",
             "account_name": "马韬涵",
+            "account_type": "人民币账户 CNY A股",
+            "position_ratio": 99.9,
             "summary": {
-                "total_assets": 855331.81,
-                "total_profit": 106545.92,
-                "daily_profit": -5624,
-                "daily_profit_pct": -0.65,
-                "market_value": 855061,
-                "available_cash": 270.81,
-                "withdrawable_cash": 270.81
+                "total_assets": 786674.91,
+                "total_profit": 29407.84,
+                "daily_profit": 32382.00,
+                "daily_profit_pct": 4.29,
+                "market_value": 785880,
+                "available_cash": 794.91,
+                "withdrawable_cash": 794.91
             },
             "holdings": [
                 {
-                    "stock_name": "滨化股份",
-                    "market_value": 120910,
-                    "profit": 16036.56,
-                    "profit_pct": 15.291,
-                    "position": 22600,
-                    "available": 22600,
-                    "cost_price": 4.64,
-                    "current_price": 5.35,
-                    "stock_code": "601678"
-                },
-                {
                     "stock_name": "神马股份",
-                    "market_value": 45840,
-                    "profit": -4204.51,
-                    "profit_pct": -8.402,
+                    "market_value": 40980,
+                    "profit": -9064.51,
+                    "profit_pct": -18.113,
                     "position": 6000,
                     "available": 6000,
                     "cost_price": 8.341,
-                    "current_price": 7.64,
+                    "current_price": 6.83,
                     "stock_code": "600810"
                 },
                 {
-                    "stock_name": "国泰集团",
-                    "market_value": 38836,
-                    "profit": 4380.93,
-                    "profit_pct": 12.715,
-                    "position": 2800,
-                    "available": 2800,
-                    "cost_price": 12.305,
-                    "current_price": 13.87,
-                    "stock_code": "603977"
-                },
-                {
-                    "stock_name": "赞宇科技",
-                    "market_value": 61344,
-                    "profit": 4459.45,
-                    "profit_pct": 7.839,
-                    "position": 4800,
-                    "available": 4800,
-                    "cost_price": 11.851,
-                    "current_price": 12.78,
-                    "stock_code": "002637"
-                },
-                {
-                    "stock_name": "岳阳兴长",
-                    "market_value": 150328,
-                    "profit": 1344.09,
-                    "profit_pct": 0.902,
-                    "position": 9200,
-                    "available": 9200,
-                    "cost_price": 16.194,
-                    "current_price": 16.34,
-                    "stock_code": "000819"
-                },
-                {
-                    "stock_name": "君正集团",
-                    "market_value": 111800,
-                    "profit": 8347.26,
-                    "profit_pct": 8.069,
-                    "position": 20000,
-                    "available": 20000,
-                    "cost_price": 5.173,
-                    "current_price": 5.59,
-                    "stock_code": "601216"
+                    "stock_name": "滨化股份",
+                    "market_value": 94224,
+                    "profit": 38151.11,
+                    "profit_pct": 68.038,
+                    "position": 15100,
+                    "available": 15100,
+                    "cost_price": 3.713,
+                    "current_price": 6.24,
+                    "stock_code": "601678"
                 },
                 {
                     "stock_name": "和邦生物",
-                    "market_value": 74000,
-                    "profit": 42765.63,
-                    "profit_pct": 136.918,
+                    "market_value": 63000,
+                    "profit": 31765.63,
+                    "profit_pct": 101.701,
                     "position": 25000,
                     "available": 25000,
                     "cost_price": 1.249,
-                    "current_price": 2.96,
+                    "current_price": 2.52,
                     "stock_code": "603077"
                 },
                 {
+                    "stock_name": "广信股份",
+                    "market_value": 139122,
+                    "profit": -21088.37,
+                    "profit_pct": -13.163,
+                    "position": 13100,
+                    "available": 13100,
+                    "cost_price": 12.23,
+                    "current_price": 10.62,
+                    "stock_code": "603599"
+                },
+                {
+                    "stock_name": "国泰集团",
+                    "market_value": 38052,
+                    "profit": 3596.93,
+                    "profit_pct": 10.439,
+                    "position": 2800,
+                    "available": 2800,
+                    "cost_price": 12.305,
+                    "current_price": 13.59,
+                    "stock_code": "603977"
+                },
+                {
+                    "stock_name": "岳阳兴长",
+                    "market_value": 119232,
+                    "profit": -29751.91,
+                    "profit_pct": -19.970,
+                    "position": 9200,
+                    "available": 9200,
+                    "cost_price": 16.194,
+                    "current_price": 12.96,
+                    "stock_code": "000819"
+                },
+                {
                     "stock_name": "安纳达",
-                    "market_value": 252003,
-                    "profit": 33416.51,
-                    "profit_pct": 15.288,
+                    "market_value": 239478,
+                    "profit": 20891.51,
+                    "profit_pct": 9.558,
                     "position": 16700,
                     "available": 16700,
                     "cost_price": 13.089,
-                    "current_price": 15.09,
+                    "current_price": 14.34,
                     "stock_code": "002136"
+                },
+                {
+                    "stock_name": "赞宇科技",
+                    "market_value": 51792,
+                    "profit": -5092.55,
+                    "profit_pct": -8.952,
+                    "position": 4800,
+                    "available": 4800,
+                    "cost_price": 11.851,
+                    "current_price": 10.79,
+                    "stock_code": "002637"
                 }
             ]
         },
@@ -407,57 +455,57 @@
             "account_type": "人民币账户 CNY A股",
             "position_ratio": 99.9,
             "summary": {
-                "total_assets": 500742.74,
-                "total_profit": 65235.08,
-                "daily_profit": -349,
-                "daily_profit_pct": -0.07,
-                "market_value": 500387,
-                "available_cash": 255.74,
-                "withdrawable_cash": 255.74
+                "total_assets": 454355.79,
+                "total_profit": -21474.03,
+                "daily_profit": 7854.00,
+                "daily_profit_pct": 1.76,
+                "market_value": 454164,
+                "available_cash": 91.79,
+                "withdrawable_cash": 91.79
             },
             "holdings": [
                 {
-                    "stock_name": "昊华科技",
-                    "market_value": 80080,
-                    "profit": 30661.38,
-                    "profit_pct": 62.24,
-                    "position": 2200,
-                    "available": 2200,
-                    "cost_price": 22.436,
-                    "current_price": 36.4,
-                    "stock_code": "600378"
+                    "stock_name": "广信股份",
+                    "market_value": 83898,
+                    "profit": -6043.57,
+                    "profit_pct": -6.650,
+                    "position": 7900,
+                    "available": 7900,
+                    "cost_price": 11.377,
+                    "current_price": 10.62,
+                    "stock_code": "603599"
                 },
                 {
                     "stock_name": "国泰集团",
-                    "market_value": 99864,
-                    "profit": 10963.98,
-                    "profit_pct": 12.43,
+                    "market_value": 97848,
+                    "profit": 8949.49,
+                    "profit_pct": 10.160,
                     "position": 7200,
                     "available": 7200,
                     "cost_price": 12.337,
-                    "current_price": 13.87,
+                    "current_price": 13.59,
                     "stock_code": "603977"
                 },
                 {
                     "stock_name": "岳阳兴长",
-                    "market_value": 204250,
-                    "profit": -4741.17,
-                    "profit_pct": -2.2,
+                    "market_value": 162000,
+                    "profit": -46960.09,
+                    "profit_pct": -22.430,
                     "position": 12500,
                     "available": 12500,
                     "cost_price": 16.707,
-                    "current_price": 16.34,
+                    "current_price": 12.96,
                     "stock_code": "000819"
                 },
                 {
                     "stock_name": "安纳达",
-                    "market_value": 116193,
-                    "profit": 28350.89,
-                    "profit_pct": 32.4,
+                    "market_value": 110418,
+                    "profit": 22580.14,
+                    "profit_pct": 25.820,
                     "position": 7700,
                     "available": 7700,
                     "cost_price": 11.397,
-                    "current_price": 15.09,
+                    "current_price": 14.34,
                     "stock_code": "002136"
                 }
             ]
@@ -465,28 +513,28 @@
         {
             "broker": "华宝证券",
             "account_name": "月月",
-            "account_type": "A股",
-            "position_ratio": 64.2,
+            "account_type": "人民币账户 CNY A股",
+            "position_ratio": 99.9,
             "summary": {
-                "total_assets": 168320.09,
-                "total_profit": 169.61,
-                "daily_profit": 169.61,
-                "daily_profit_pct": 0.1,
-                "market_value": 108000,
-                "available_cash": 60320.09,
-                "withdrawable_cash": 60320.09
+                "total_assets": 148707.64,
+                "total_profit": -23536.43,
+                "daily_profit": 3080.00,
+                "daily_profit_pct": 2.11,
+                "market_value": 148680,
+                "available_cash": 27.64,
+                "withdrawable_cash": 27.64
             },
             "holdings": [
                 {
-                    "stock_name": "盾安环境",
-                    "market_value": 108000,
-                    "profit": 169.61,
-                    "profit_pct": 0.157,
-                    "position": 9000,
-                    "available": 0,
-                    "cost_price": 11.981,
-                    "current_price": 12,
-                    "stock_code": "002011"
+                    "stock_name": "广信股份",
+                    "market_value": 148680,
+                    "profit": -23536.43,
+                    "profit_pct": -13.667,
+                    "position": 14000,
+                    "available": 14000,
+                    "cost_price": 12.301,
+                    "current_price": 10.62,
+                    "stock_code": "603599"
                 }
             ]
         }

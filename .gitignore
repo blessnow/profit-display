@@ -2,3 +2,4 @@ node_modules/
 data/
 .env
 *.log
+微信图片_*.jpg
